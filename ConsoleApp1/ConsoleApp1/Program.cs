@@ -10,48 +10,40 @@ namespace ConsoleApp1
 
     class Program
     {
+        static bool CheckForNOfAnyLetter( string str, int n )
+        {
+            var charcount = new Dictionary<char,int>();
+            for (int i = 0; i<str.Length; i++)
+            {
+                if (!charcount.ContainsKey(str[i])) {
+                    charcount[str[i]] = 1;
+                } else
+                {
+                    charcount[str[i]] += 1;             
+                }
+            }
+
+            foreach( var value in charcount.Values )
+            {
+                if (value==n) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         static void Main(string[] args)
         {
             // int, float, double, byte, string <- value types
             // everything else <- reference types
 
-            var xl = new HashSet<int>();
+            string[] input = File.ReadAllLines("input.txt");
 
-            bool br = false;
 
-            int x = 0;
-            string[] str = File.ReadAllLines("input.txt");
-            int i = 0;
-            while (true)
-            {
-                //Console.WriteLine(str[i]);
-                
-                if (str[i].Substring(0, 1)=="-")
-                {
-                    x -= int.Parse(str[i].Substring(1));
-                } else
-                {
-                    x += int.Parse(str[i].Substring(1));
-                }
 
-                
-                if (xl.Contains(x))
-                {
-                     break;
-                }
-
-                xl.Add(x);
-
-                if (i==str.Length-1) {
-                    i=0;
-                } else
-                {
-                    i++;
-                }
-            }
-            Console.WriteLine();
-            Console.Write("Answer is: ");
-            Console.WriteLine(x);
+            int answer = x1 * x2;
+            Console.WriteLine(answer);
             Console.ReadKey();
         }
     }
