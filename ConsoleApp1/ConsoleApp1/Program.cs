@@ -10,25 +10,18 @@ namespace ConsoleApp1
 
     class Program
     {
-        static bool CheckForNOfAnyLetter( string str, int n )
+        static bool DiffersByOne( string a, string b)
         {
-            var charcount = new Dictionary<char,int>();
-            for (int i = 0; i<str.Length; i++)
+            int z = 0;
+            if (b.Length != a.Length) {
+                return false;
+            }
+            for (int i = 0; i < a.Length; i++)
             {
-                if (!charcount.ContainsKey(str[i])) {
-                    charcount[str[i]] = 1;
-                } else
-                {
-                    charcount[str[i]] += 1;             
-                }
+                if (a[i] != b[i]) z++;
             }
 
-            foreach( var value in charcount.Values )
-            {
-                if (value==n) {
-                    return true;
-                }
-            }
+            if (z==1) return true;
 
             return false;
         }
@@ -39,11 +32,38 @@ namespace ConsoleApp1
             // everything else <- reference types
 
             string[] input = File.ReadAllLines("input.txt");
+            string x = "";
 
 
+            for (int i = 0; i<input.Length; i++) { 
+                foreach (string s in input)
+                {
+                    if (DiffersByOne(s, input[i]))
+                    {
+                        x = s.ToString() + "," + input[i].ToString();
+                        Console.WriteLine(x);
+                        break;
+                    }
+                }
+            }
 
-            int answer = x1 * x2;
-            Console.WriteLine(answer);
+            string[] parts = x.Split(',');
+
+            int y = 0;
+
+            for (int i = 0; i<parts[0].Length; i++)
+            {
+                if (parts[0][i]!=parts[1][i])
+                {
+                    y = i;
+                    break;
+                }
+            }
+
+            string answer = parts[0].Remove(y,1);
+
+            Console.WriteLine();
+            Console.WriteLine("Answer: " + answer);
             Console.ReadKey();
         }
     }
