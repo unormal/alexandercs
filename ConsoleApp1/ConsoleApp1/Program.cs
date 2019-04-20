@@ -1,66 +1,115 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Text;
-using Data;
+using System.IO;
 
 namespace ConsoleApp1
 {
-    
+    class Rect
+    {
+        public int id;
+        public int x, y;
+        public int w, h;
+    }
 
     class Program
     {
-        static bool DiffersByOne( string a, string b)
+        static Rect CreateRect(string str)
         {
-            int z = 0;
-            if (b.Length != a.Length) {
-                return false;
-            }
-            for (int i = 0; i < a.Length; i++)
-            {
-                if (a[i] != b[i]) z++;
-            }
+            var r = new Rect();
 
-            if (z==1) return true;
+            str = str.Replace(" ", "");
+            str = str.Replace("#", "");
 
-            return false;
+            var parts = str.Split(new char[] { ',', 'x', ':', '@' });
+
+            r.id = int.Parse(parts[0]);
+            r.x = int.Parse(parts[1]);
+            r.y = int.Parse(parts[2]);
+            r.w = int.Parse(parts[3]);
+            r.h = int.Parse(parts[4]);
+
+            //map[r.x,r.y] = r.id;
+            return r;
         }
-
         static void Main(string[] args)
         {
             // int, float, double, byte, string <- value types
             // everything else <- reference types
 
             string[] input = File.ReadAllLines("input.txt");
-            string x = "";
 
 
-            for (int i = 0; i<input.Length; i++) { 
-                foreach (string s in input)
+            List<Rect> rects = new List<Rect>();
+
+            foreach (string line in input) rects.Add(CreateRect(line));
+
+            string[,] map = new string[1000, 1000];
+
+            for (int x = 0; x < 1000; x++)
+            {
+                for (int y = 0; y < 1000; y++)
                 {
-                    if (DiffersByOne(s, input[i]))
+                    map[x, y] = ".";
+                }
+            }
+
+            foreach (Rect r in rects)
+            {
+                for (int x = r.x; x < r.x + r.w; x++)
+                {
+                    for (int y = r.y; y < r.y + r.h; y++)
                     {
-                        x = s.ToString() + "," + input[i].ToString();
-                        Console.WriteLine(x);
+                        if (map[x, y] == ".")
+                        {
+                            map[x, y] = r.id.ToString();
+                        }
+                        else if (map[x, y][0] == 'X' && map[x, y] != map[x, y] + "," + r.id.ToString())
+                        {
+                            map[x, y] = map[x, y] + "," + r.id.ToString();
+                        }
+                        else if (map[x, y] != "X" + "," + map[x, y] + "," + r.id.ToString())
+                        {
+                            map[x, y] = "X" + "," + map[x, y] + "," + r.id.ToString();
+                        }
+                    }
+                }
+            }
+
+            HashSet<int> overlappingIds = new HashSet<int>();
+            List<int> ix = new List<int>();
+            int answer = 0;
+
+            foreach (string id in map)
+            {
+                if (id[0] == 'X')
+                {
+                    foreach (string item in id.Remove(0, 1).Split(','))
+                    {
+                        if (item != "" && !ix.Contains(int.Parse(item)))
+                        {
+                            ix.Add(int.Parse(item));
+                        }
+                    }
+                    foreach (int it in ix)
+                    {
+                        overlappingIds.Add(it);
+                    }
+                    if (overlappingIds.Count == 1301)
+                    {
                         break;
                     }
                 }
             }
 
-            string[] parts = x.Split(',');
-
-            int y = 0;
-
-            for (int i = 0; i<parts[0].Length; i++)
+            for (int t = 1; t < 1302; t++)
             {
-                if (parts[0][i]!=parts[1][i])
+                if (!overlappingIds.Contains(t))
                 {
-                    y = i;
+                    answer = t;
                     break;
                 }
             }
 
-            string answer = parts[0].Remove(y,1);
 
             Console.WriteLine();
             Console.WriteLine("Answer: " + answer);
