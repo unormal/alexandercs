@@ -53,53 +53,31 @@ namespace ConsoleApp1
                 }
             }
 
+            HashSet<int> overlappingIds = new HashSet<int>();
+
             foreach (Rect r in rects)
             {
                 for (int x = r.x; x < r.x + r.w; x++)
                 {
                     for (int y = r.y; y < r.y + r.h; y++)
                     {
+
                         if (map[x, y] == ".")
                         {
                             map[x, y] = r.id.ToString();
                         }
-                        else if (map[x, y][0] == 'X' && map[x, y] != map[x, y] + "," + r.id.ToString())
+                        else
                         {
-                            map[x, y] = map[x, y] + "," + r.id.ToString();
-                        }
-                        else if (map[x, y] != "X" + "," + map[x, y] + "," + r.id.ToString())
-                        {
-                            map[x, y] = "X" + "," + map[x, y] + "," + r.id.ToString();
+                            overlappingIds.Add(r.id);
+
+                            if ( map[x,y] != "X") overlappingIds.Add( int.Parse(map[x,y]) );
+                            map[x,y] = "X";
+                    
                         }
                     }
                 }
             }
-
-            HashSet<int> overlappingIds = new HashSet<int>();
-            List<int> ix = new List<int>();
-            int answer = 0;
-
-            foreach (string id in map)
-            {
-                if (id[0] == 'X')
-                {
-                    foreach (string item in id.Remove(0, 1).Split(','))
-                    {
-                        if (item != "" && !ix.Contains(int.Parse(item)))
-                        {
-                            ix.Add(int.Parse(item));
-                        }
-                    }
-                    foreach (int it in ix)
-                    {
-                        overlappingIds.Add(it);
-                    }
-                    if (overlappingIds.Count == 1301)
-                    {
-                        break;
-                    }
-                }
-            }
+            int answer = -1;
 
             for (int t = 1; t < 1302; t++)
             {
