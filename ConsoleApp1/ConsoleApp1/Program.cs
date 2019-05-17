@@ -6,144 +6,122 @@ using System.Text.RegularExpressions;
 
 namespace ConsoleApp1
 {
-    class Event : IComparable
+    class Position
     {
-        public DateTime time;
-        public string text;
-        public int guardid;
+        public int x;
+        public int y;
 
-        public Event(DateTime time, string text, int guardid)
+        public Position(int x, int y)
         {
-            this.time = time;
-            this.text = text;
-            this.guardid = guardid;
-        }
-
-        public int CompareTo(object obj)
-        {
-            var otherEvent = obj as Event;
-            return time.CompareTo(otherEvent.time);
+            this.x = x;
+            this.y = y;
         }
     }
     class Program
     {
-        static int GetGuardNumber(string str)
-        {
-            var splitted = str.Split('#');
-
-            return int.Parse(splitted[1].Split(' ')[0]);
-        }
         static void Main(string[] args)
         {
-            // int, float, double, byte, string <- value types
-            // everything else <- reference types
-
-            string[] input = File.ReadAllLines("input.txt");
-
-            int answer = 0;
-
-            var events = new List<Event>();
-            var guards = new Dictionary<int,TimeSpan>();
-
-
-            foreach (string item in input)
-            {
-                string[] i = item.Split(']');
-                events.Add(new Event(DateTime.Parse(i[0].Substring(1)),i[1],-1));
-            }
-            events.Sort();
+            int distance = 0;
+            int x=0;
+            int y=0;
+            int dir=0;
+            int answer=-1;
             
-            int guardid = -1;
-            DateTime time = new DateTime();
-
-            TimeSpan amount = new TimeSpan(0);
-
-            foreach (Event ev in events)
-            {
-                if (ev.text.Contains("Guard"))
-                {
-                    guardid = GetGuardNumber(ev.text);
-                } else if (ev.text.Contains("falls"))
-                {
-                    time=ev.time;
-                } else if (ev.text.Contains("wakes"))
-                {
-                    amount += ev.time - time;
-
-                    if (!guards.ContainsKey(guardid))
-                    {
-                        guards.Add(guardid, amount);
-                    }
-                    else
-                    {
-                        guards[guardid] += amount;
-                    }
-                    amount = new TimeSpan(0);
-                }
-
-                ev.guardid = guardid;
-            }
+            var positions = new List<Position>();
+            string[] input = File.ReadAllText("input.txt").Split(new char[]{',',' '});
             
-            double longest = double.MinValue;
-            int longestMinute = -1;
-            int longestMinuteGuard = -1;
-            int longestGuard = -1;
 
-            foreach( var guard in guards )
-            {
-                if( guard.Value.TotalMinutes > longest )
+            bool brk=false;
+            while (answer == -1) {
+                foreach (var item in input)
                 {
-                    longest = guard.Value.TotalMinutes;
-                    longestGuard = guard.Key;
-                }
-            }
-
-            var listofguards = guards.Keys.ToList();
-
-            var minutecount = new Dictionary<int, int>(); // minute,times
-
-            int sleepminute = 0;
-
-            int longestminutecount = int.MinValue;
-
-            foreach( int currentguard in listofguards )
-            {
-                minutecount.Clear();
-                foreach (Event ev in events)
-                {
-                    if (ev.guardid == currentguard)
+                    if (brk) break;
+                    if (item != "")
                     {
-                        if (ev.text.Contains("falls"))
+                        Console.WriteLine("step = " + item);
+                        if (item.Substring(0,1)=="R")
                         {
-                            sleepminute=ev.time.Minute;
-                        } else if (ev.text.Contains("wakes"))
-                        {
-                            for (int i=sleepminute;i<ev.time.Minute;i++)
+                            dir+=1;
+                            if (dir==4)
                             {
-                                if (minutecount.ContainsKey(i))
+                                dir=0;
+                            }
+                        } else
+                        {
+                            dir-=1;
+                            if (dir==-1)
+                            {
+                                dir=3;
+                            }
+                        }
+                        if (dir==0)
+                        {
+                            for (int i = 0;i< int.Parse(item.Substring(1));i++) {
+                                y+=1;
+                                Console.WriteLine("pos = " + x + "," + y);
+                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
                                 {
-                                    minutecount[i]+=1;
-                                } else
-                                {
-                                    minutecount.Add(i, 1);
+                                    answer = Math.Abs(x) + Math.Abs(y);
+                                    brk = true;
+                                    break;
                                 }
-                                if( minutecount[i] > longestminutecount )
+
+                                positions.Add(new Position(x, y));
+                            }
+                        } else if (dir==1)
+                        {
+                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
+                            {
+                                x +=1;
+                                Console.WriteLine("pos = " + x + "," + y);
+                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
                                 {
-                                    longestMinute=i;
-                                    longestMinuteGuard=currentguard;
-                                    longestminutecount=minutecount[i];
+                                    answer = Math.Abs(x) + Math.Abs(y);
+                                    brk = true;
+                                    break;
                                 }
+
+                                positions.Add(new Position(x, y));
+                            }
+                        } else if (dir==2)
+                        {
+                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
+                            {
+                                y -=1;
+                                Console.WriteLine("pos = " + x + "," + y);
+                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
+                                {
+                                    answer = Math.Abs(x) + Math.Abs(y);
+                                    brk = true;
+                                    break;
+                                }
+
+                                positions.Add(new Position(x, y));
+                            }
+                        } else if (dir==3)
+                        {
+                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
+                            {
+                                x -=1;
+                                Console.WriteLine("pos = " + x + "," + y);
+                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
+                                {
+                                    answer = Math.Abs(x) + Math.Abs(y);
+                                    brk=true;
+                                    break;
+                                }
+
+                                positions.Add(new Position(x, y));
                             }
                         }
                     }
                 }
             }
 
-
-            answer = longestMinuteGuard*longestMinute;
+            distance = Math.Abs(x) + Math.Abs(y);
 
             Console.WriteLine();
-            Console.WriteLine(answer);
+            Console.WriteLine("answer: "+answer);
             Console.ReadKey();
         }
     }
