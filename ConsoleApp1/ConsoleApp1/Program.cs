@@ -21,107 +21,43 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            int distance = 0;
-            int x=0;
-            int y=0;
-            int dir=0;
-            int answer=-1;
+            string input = File.ReadAllText("input.txt");
             
-            var positions = new List<Position>();
-            string[] input = File.ReadAllText("input.txt").Split(new char[]{',',' '});
-            
+            bool reaction = true;
 
-            bool brk=false;
-            while (answer == -1) {
-                foreach (var item in input)
+            var lengths = new List<int>();
+
+            string oldinput = input;
+
+            for( char c = 'a'; c <= 'z'; c++ )
+            {
+                input=input.Replace((""+c).ToLower(),"");
+                input=input.Replace((""+c).ToUpper(),"");
+                while (reaction == true)
                 {
-                    if (brk) break;
-                    if (item != "")
+                    reaction = false;
+                    for (int i = 1; i < input.Length; i++)
                     {
-                        Console.WriteLine("step = " + item);
-                        if (item.Substring(0,1)=="R")
+                        if (input.Substring(i - 1, 1).Equals(input.Substring(i, 1), StringComparison.InvariantCultureIgnoreCase))
                         {
-                            dir+=1;
-                            if (dir==4)
+                            if (input.Substring(i - 1, 1) != input.Substring(i, 1))
                             {
-                                dir=0;
-                            }
-                        } else
-                        {
-                            dir-=1;
-                            if (dir==-1)
-                            {
-                                dir=3;
-                            }
-                        }
-                        if (dir==0)
-                        {
-                            for (int i = 0;i< int.Parse(item.Substring(1));i++) {
-                                y+=1;
-                                Console.WriteLine("pos = " + x + "," + y);
-                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
-                                {
-                                    answer = Math.Abs(x) + Math.Abs(y);
-                                    brk = true;
-                                    break;
-                                }
-
-                                positions.Add(new Position(x, y));
-                            }
-                        } else if (dir==1)
-                        {
-                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
-                            {
-                                x +=1;
-                                Console.WriteLine("pos = " + x + "," + y);
-                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
-                                {
-                                    answer = Math.Abs(x) + Math.Abs(y);
-                                    brk = true;
-                                    break;
-                                }
-
-                                positions.Add(new Position(x, y));
-                            }
-                        } else if (dir==2)
-                        {
-                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
-                            {
-                                y -=1;
-                                Console.WriteLine("pos = " + x + "," + y);
-                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
-                                {
-                                    answer = Math.Abs(x) + Math.Abs(y);
-                                    brk = true;
-                                    break;
-                                }
-
-                                positions.Add(new Position(x, y));
-                            }
-                        } else if (dir==3)
-                        {
-                            for (int i = 0; i < int.Parse(item.Substring(1)); i++)
-                            {
-                                x -=1;
-                                Console.WriteLine("pos = " + x + "," + y);
-                                if (positions.Any(pos => (pos.x == x && pos.y == y)))
-                                {
-                                    answer = Math.Abs(x) + Math.Abs(y);
-                                    brk=true;
-                                    break;
-                                }
-
-                                positions.Add(new Position(x, y));
+                                input = input.Remove(i - 1, 2);
+                                reaction = true;
                             }
                         }
                     }
                 }
+                reaction = true;
+                lengths.Add(input.Length);
+                input = oldinput;
             }
 
-            distance = Math.Abs(x) + Math.Abs(y);
+            lengths.Sort();
 
+            Console.WriteLine(input);
             Console.WriteLine();
-            Console.WriteLine("answer: "+answer);
+            Console.WriteLine("answer: "+lengths[0]);
             Console.ReadKey();
         }
     }
