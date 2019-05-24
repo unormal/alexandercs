@@ -21,43 +21,46 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            string input = File.ReadAllText("input.txt");
+            string[] input = File.ReadAllLines("input.txt");
             
-            bool reaction = true;
+            var code = "";
 
-            var lengths = new List<int>();
+            int x=0;
+            int y=2;
 
-            string oldinput = input;
+            string[,] pad = new string[5,5];
+            pad[0,0] = "X"; pad[1,0] = "X"; pad[2,0] = "1"; pad[3,0] = "X"; pad[4,0] = "X";
+            pad[0,1] = "X"; pad[1,1] = "2"; pad[2,1] = "3"; pad[3,1] = "4"; pad[4,1] = "X";
+            pad[0,2] = "5"; pad[1,2] = "6"; pad[2,2] = "7"; pad[3,2] = "8"; pad[4,2] = "9";
+            pad[0,3] = "X"; pad[1,3] = "A"; pad[2,3] = "B"; pad[3,3] = "C"; pad[4,3] = "X";
+            pad[0,4] = "X"; pad[1,4] = "X"; pad[2,4] = "D"; pad[3,4] = "X"; pad[4,4] = "X";
 
-            for( char c = 'a'; c <= 'z'; c++ )
+
+            foreach (string str in input)
             {
-                input=input.Replace((""+c).ToLower(),"");
-                input=input.Replace((""+c).ToUpper(),"");
-                while (reaction == true)
+                foreach (char dir in str)
                 {
-                    reaction = false;
-                    for (int i = 1; i < input.Length; i++)
+                    if (dir=='L' && pad[Math.Max(0,x-1),y] != "X" && x!=0)
                     {
-                        if (input.Substring(i - 1, 1).Equals(input.Substring(i, 1), StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            if (input.Substring(i - 1, 1) != input.Substring(i, 1))
-                            {
-                                input = input.Remove(i - 1, 2);
-                                reaction = true;
-                            }
-                        }
+                        x-=1;
+                    } else if (dir== 'R' && pad[Math.Min(4,x+1), y] != "X" && x!=4)
+                    {
+                        x+=1;
+                    } else if (dir=='U' && pad[x, Math.Max(0,y-1)] != "X" && y!=0)
+                    {
+                        y-=1;
+                    } else if (dir=='D' && pad[x, Math.Min(4,y+1)] != "X" && y!=4)
+                    {
+                        y+=1;
                     }
                 }
-                reaction = true;
-                lengths.Add(input.Length);
-                input = oldinput;
+                code = code + pad[x,y];
             }
 
-            lengths.Sort();
 
-            Console.WriteLine(input);
+
             Console.WriteLine();
-            Console.WriteLine("answer: "+lengths[0]);
+            Console.WriteLine("answer: "+code);
             Console.ReadKey();
         }
     }
