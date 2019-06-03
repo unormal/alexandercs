@@ -6,70 +6,55 @@ using System.Text.RegularExpressions;
 
 namespace ConsoleApp1
 {
-    class Position
+    class Triangle
     {
-        public int x;
-        public int y;
+        public int a;
+        public int b;
+        public int c;
 
-        public Position(int x, int y)
+        public Triangle(int a, int b, int c)
         {
-            this.x = x;
-            this.y = y;
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+
+        public bool isPossible()
+        {
+            if ((a + b) > c && (b + c) > a && (c + a) > b)
+            {
+                return true;
+            }
+            return false;
         }
     }
     class Program
     {
-        public List<int> parseLine( string line )
-        {
-            //...
-            throw new NotImplementedException();
-        }
-
         static void Main(string[] args)
         {
             string[] input = File.ReadAllLines("input.txt");
             
-            var lines = new Dictionary<int,List<int>>();
-            var differences = new List<decimal>();
-            var even = new List<decimal>();
-            var alreadydid = new List<int>();
+            var trianglepoints = new Dictionary<int,List<int>>();
+
+
             for (int i = 0;i<input.Length;i++) {
-                lines.Add(i,input[i].Replace('\t',' ').Split(' ').Select( e => int.Parse(e)).ToList());
+                trianglepoints.Add(i,input[i].Trim().Replace("    ", " ").Replace("   ", " ").Replace("  "," ").Split(' ').Select( e => int.Parse(e)).ToList());
+            }
+            var triangles = new List<Triangle>();
+
+            foreach (var tri in trianglepoints.Values)
+            {
+                triangles.Add(new Triangle(tri[0],tri[1],tri[2]));
             }
 
-            bool br=false;
-            for (int i = 0; i < lines.Count; i++)
+            int sum=0;
+            foreach (var tri in triangles)
             {
-                foreach (var item in lines[i])
+                if (tri.isPossible())
                 {
-                    foreach (var check in lines[i])
-                    {
-                        if ((decimal)(item) / (decimal)(check) == Math.Floor((decimal)(item / check)) && item!=check && item/check!=0)
-                        {
-                            even.Add(item / check);
-                            alreadydid.Add(item / check);
-                            Console.WriteLine(item+","+check+"="+(item/check));
-                            br=true;
-                            break;
-                        }
-                    }
-                    if (br)
-                    {
-                        br=false;
-                        alreadydid.Clear();
-                        break;
-                    }
+                    sum+=1;
                 }
             }
-
-            int sum = 0;
-            foreach (int val in even)
-            {
-                Console.WriteLine(val);
-                sum+=val;
-            }
-
-            
 
             Console.WriteLine();
             Console.WriteLine("answer: "+sum);
