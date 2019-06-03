@@ -34,17 +34,20 @@ namespace ConsoleApp1
         {
             string[] input = File.ReadAllLines("input.txt");
             
-            var trianglepoints = new Dictionary<int,List<int>>();
+            var tripoints = new List<List<int>>();
 
-
-            for (int i = 0;i<input.Length;i++) {
-                trianglepoints.Add(i,input[i].Trim().Replace("    ", " ").Replace("   ", " ").Replace("  "," ").Split(' ').Select( e => int.Parse(e)).ToList());
+            for (int i = 0; i < input.Length; i++)
+            {
+                tripoints.Add(input[i].Trim().Replace("    ", " ").Replace("   ", " ").Replace("  ", " ").Split(' ').Select(e => int.Parse(e)).ToList());
             }
             var triangles = new List<Triangle>();
 
-            foreach (var tri in trianglepoints.Values)
+            for (int ix = 0; ix < tripoints.Count; ix+=3)
             {
-                triangles.Add(new Triangle(tri[0],tri[1],tri[2]));
+                for (int iy = 0; iy < tripoints[ix].Count; iy++)
+                {
+                    triangles.Add(new Triangle(tripoints[ix][iy],tripoints[ix+1][iy],tripoints[ix+2][iy]));
+                }
             }
 
             int sum=0;
