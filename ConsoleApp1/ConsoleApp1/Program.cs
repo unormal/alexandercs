@@ -6,61 +6,58 @@ using System.Text.RegularExpressions;
 
 namespace ConsoleApp1
 {
-    class Triangle
+    class Point
     {
-        public int a;
-        public int b;
-        public int c;
+        public int x;
+        public int y;
 
-        public Triangle(int a, int b, int c)
+        public Point(int x, int y)
         {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-        }
-
-        public bool isPossible()
-        {
-            if ((a + b) > c && (b + c) > a && (c + a) > b)
-            {
-                return true;
-            }
-            return false;
+            this.x = x;
+            this.y = y;
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            string[] input = File.ReadAllLines("input.txt");
+            var input = File.ReadAllLines("input.txt");
+
+            var points = new List<Point>();
+
+            foreach (string coord in input)
+            {
+                var point = coord.Replace(" ","").Split(',');
+                points.Add(new Point(int.Parse(point[0]),int.Parse(point[1])));
+            }
+
+            char id = 'A';
+
+            bool full=false;
+
+            for (int iy = 0; iy<10; iy++)
+            {
+                for (int ix = 0; ix<10; ix++)
+                {
+                    full = false;
+                    foreach (Point coord in points)
+                    {
+                        if (coord.x==ix && coord.y==iy)
+                        {
+                            Console.Write(id);
+                            id++;
+                            full=true;
+                        }
+                    }
+                    if (!full)
+                    {
+                        Console.Write('.');
+                    }
+                }
+                Console.WriteLine();
+            }
             
-            var tripoints = new List<List<int>>();
-
-            for (int i = 0; i < input.Length; i++)
-            {
-                tripoints.Add(input[i].Trim().Replace("    ", " ").Replace("   ", " ").Replace("  ", " ").Split(' ').Select(e => int.Parse(e)).ToList());
-            }
-            var triangles = new List<Triangle>();
-
-            for (int ix = 0; ix < tripoints.Count; ix+=3)
-            {
-                for (int iy = 0; iy < tripoints[ix].Count; iy++)
-                {
-                    triangles.Add(new Triangle(tripoints[ix][iy],tripoints[ix+1][iy],tripoints[ix+2][iy]));
-                }
-            }
-
-            int sum=0;
-            foreach (var tri in triangles)
-            {
-                if (tri.isPossible())
-                {
-                    sum+=1;
-                }
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("answer: "+sum);
+            Console.WriteLine(/*Answer*/);
             Console.ReadKey();
         }
     }
